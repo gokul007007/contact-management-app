@@ -1,26 +1,4 @@
-// import React from 'react';
-// import { useLocation } from 'react-router-dom';
-
-// interface IContactDetailsProps {}
-
-// export const ContactDetails: React.FC<IContactDetailsProps> = () => {
-//   const location = useLocation();
-//   const { firstName, lastName, status } = location.state;
-
-//   return (
-//     <div>
-//       <h2>Contact Details</h2>
-//       <p>First Name: {firstName}</p>
-//       <p>Last Name: {lastName}</p>
-//       <p>Status: {status}</p>
-//     </div>
-//   );
-// };
-
-
-
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 interface IContactDetailsProps {}
@@ -28,7 +6,16 @@ interface IContactDetailsProps {}
 export const ContactDetails: React.FC<IContactDetailsProps> = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { firstName, lastName, status } = location.state;
+  const [contact, setContact] = useState(null);
+
+  useEffect(() => {
+    // Retrieve the contact data from local storage
+    const storedContactData = localStorage.getItem('contactData');
+    if (storedContactData) {
+      const contactData = JSON.parse(storedContactData);
+      setContact(contactData);
+    }
+  }, []);
 
   const handleEdit = () => {
     // Handle edit functionality here
@@ -39,12 +26,20 @@ export const ContactDetails: React.FC<IContactDetailsProps> = () => {
     // Handle delete functionality here
     // You can show a confirmation dialog or directly delete the contact
     // After deleting, navigate back to the contact list or any other desired page
+    // Remove the contact data from local storage
+    localStorage.removeItem('contactData');
     navigate('/contacts');
   };
 
   const handleCreateContact = () => {
     navigate('/contacts/form');
   };
+
+  if (!contact) {
+    return null; // or display a loading state
+  }
+
+  const { firstName, lastName, status } = contact;
 
   return (
     <div>
